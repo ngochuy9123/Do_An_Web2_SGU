@@ -4,6 +4,7 @@ trait QueryBuilder{
     public $tableName = '';
     public $where = '';
     public $and = '';
+    public $group='';
     public $operator = '';
     public $selectField = '*';
     public $limit = '';
@@ -44,6 +45,16 @@ trait QueryBuilder{
         }
         return $this;
     }
+    
+    public function groupBy($field){
+        if(empty($this->group)){
+            $this->group .= "GROUP BY $field";
+        }
+        else{
+            $this->group .= ",$field";
+        }
+        return $this;
+    }
 
     public function whereLike($field, $value){
 
@@ -57,6 +68,41 @@ trait QueryBuilder{
         return $this;
     }
 
+    public function whereLikeOr($field, $value){
+
+        if (empty($this->where)){
+            $this->operator = ' WHERE ';
+        }else{
+            $this->operator = ' OR ';
+        }
+        $this->where.="$this->operator $field LIKE '$value'";
+
+        return $this;
+    }
+    
+    public function customWhereOr($data) {
+        if (empty($this->where)){
+            $this->operator = ' WHERE ';
+        }else{
+            $this->operator = ' OR ';
+        }
+        $this->where.="$this->operator ".$data;
+        
+        return $this;
+        
+    }
+    public function customWhereAnd($data) {
+        if (empty($this->where)){
+            $this->operator = ' WHERE ';
+        }else{
+            $this->operator = ' AND ';
+        }
+        $this->where.="$this->operator ".$data;
+        
+        return $this;
+        
+    }
+    
     public function select($field='*'){
         $this->selectField = $field;
         return $this;
@@ -79,17 +125,32 @@ trait QueryBuilder{
         }else{
             $this->orderBy = "ORDER BY ".$field." ".$type;
         }
-
         return $this;
     }
 
     public function get(){
-        $sqlQuery = "SELECT $this->selectField FROM $this->tableName $this->innerJoin $this->where $this->and $this->orderBy $this->limit";
+        $sqlQuery = "SELECT $this->selectField FROM $this->tableName $this->innerJoin $this->where $this->and $this->group $this->orderBy $this->limit";
         $sqlQuery = trim($sqlQuery);
         $query = $this->query($sqlQuery);
-        
+        // echo $sqlQuery;
         //Reset field
         $this->resetQuery();
+
+        if (!empty($query)){
+
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return false;
+    }
+    
+    public function getNotReset(){
+        $sqlQuery = "SELECT $this->selectField FROM $this->tableName $this->innerJoin $this->where $this->and $this->group $this->orderBy $this->limit";
+        $sqlQuery = trim($sqlQuery);
+        // echo $sqlQuery;
+        
+        $query = $this->query($sqlQuery);
+        //Reset field
+        // $this->resetQuery();
 
         if (!empty($query)){
 
@@ -110,6 +171,8 @@ trait QueryBuilder{
         $insertStatus = $this->insertData($tableName, $data);
         return $insertStatus;
     }
+    
+
 
     //LastId
     public function lastId(){
@@ -151,6 +214,7 @@ trait QueryBuilder{
     }
 
     public function resetQuery(){
+        
         $this->tableName = '';
         $this->where = '';
         $this->operator = '';

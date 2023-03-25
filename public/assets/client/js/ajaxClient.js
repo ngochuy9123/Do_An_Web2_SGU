@@ -9,8 +9,11 @@ const categories = document.getElementsByName("categories");
 const categoryValues = [];
 const brands = document.getElementsByName("brands");
 const brandValues = [];
+const sizes = document.getElementsByName("sizes");
+const sizeValues = [];
 
 const categoryCheckbox = document.querySelectorAll('input[name="categories"]');
+const formSearch = document.getElementById("search-form");
 
 for (var i = 0; i < categoryCheckbox.length; i++) {
   categoryCheckbox[i].addEventListener("change", filter);
@@ -20,7 +23,11 @@ const brandCheckbox = document.querySelectorAll('input[name="brands"]');
 for (var i = 0; i < brandCheckbox.length; i++) {
   brandCheckbox[i].addEventListener("change", filter);
 }
-
+const sizeCheckbox = document.querySelectorAll('input[name="sizes"]');
+for (var i = 0; i < sizeCheckbox.length; i++) {
+  sizeCheckbox[i].addEventListener("change", filter);
+}
+//Quet ca
 function checkedCategories() {
   for (var i = 0; i < categories.length; i++) {
     if (categories[i].checked) {
@@ -35,77 +42,43 @@ function checkedBrands() {
     }
   }
 }
-
-function phanTrang(vtt) {
-  const currentUrl = window.location.origin + "/doanweb2";
-  const relativeUrl = "/client/TrangSanPhamController/ajaxPhanTrang";
-  const fullUrl = currentUrl + relativeUrl;
-
-  const _WEB_ROOT = document.getElementById("_WEB_ROOT").value;
-
-  fetch(fullUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: "vtt=" + vtt,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      var products = data;
-      giaoDienSanPham(products);
-    })
-    .catch((error) => {
-      // Handle error
-    });
+function checkSizes() {
+  for (var i = 0; i < sizes.length; i++) {
+    if (sizes[i].checked) {
+      sizeValues.push(sizes[i].value);
+    }
+  }
 }
 
-function timKiem(text) {
-  const currentUrl = window.location.origin + "/doanweb2";
-  const relativeUrl = "/client/TrangSanPhamController/ajaxPhanTrang";
-  const fullUrl = currentUrl + relativeUrl;
-  console.log(fullUrl);
-
-  const _WEB_ROOT = document.getElementById("_WEB_ROOT").value;
-
-  fetch(fullUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: "vtt=" + vtt,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      var products = data;
-      var html = "";
-
-      products.forEach(function (product) {
-        html += "Hello";
-      });
-      dssp.innerHTML = html;
-    })
-    .catch((error) => {
-      // Handle error
-    });
+function getValueofCheckBox() {
+  categoryValues.splice(0, categoryValues.length);
+  brandValues.splice(0, categoryValues.length);
+  sizeValues.splice(0, sizeValues.length);
+  checkedBrands();
+  checkedCategories();
+  checkSizes();
 }
 
-function filter() {
+function filter(vtt) {
+  if (typeof vtt === "object") {
+    vtt = "0";
+  }
   const currentUrl = window.location.origin + "/" + tenDoAn;
   const relativeUrl = "/client/TrangSanPhamController/filter";
   const fullUrl = currentUrl + relativeUrl;
   console.log(fullUrl);
-  categoryValues.splice(0, categoryValues.length);
-  brandValues.splice(0, categoryValues.length);
-  checkedBrands();
-  checkedCategories();
+  getValueofCheckBox();
+  var text = formSearch.tenSp.value;
 
   const data = {
     category: categoryValues,
     brand: brandValues,
+    size: sizeValues,
+    trang: vtt, // If trang is empty, set it to 0
+    text: text,
   };
 
-  console.log(data);
+  // console.log(data);
 
   fetch(fullUrl, {
     method: "POST",
@@ -117,62 +90,16 @@ function filter() {
     .then((response) => response.json())
     .then((data) => {
       var products = data.ds;
-      const soTrang = data.soTrang;
       console.log(data);
       giaoDienSanPham(products); //In ra giao dien San Pham
 
       var trang = data.soTrang;
       var htmlTrang = "";
       for (let i = 1; i <= trang; i++) {
-        htmlTrang += `<a class="active" onclick="phanTrangFilter(${
-          i - 1
-        })">${i}</a>`;
+        htmlTrang += `<a class="active" onclick="filter(${i - 1})">${i}</a>`;
       }
-
-      dsSoTrang.innerHTML = htmlTrang;
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}
-
-function phanTrangFilter(trang) {
-  const currentUrl = window.location.origin + "/" + tenDoAn;
-  const relativeUrl = "/client/TrangSanPhamController/filter";
-  const fullUrl = currentUrl + relativeUrl;
-  console.log(fullUrl);
-  categoryValues.splice(0, categoryValues.length);
-  brandValues.splice(0, categoryValues.length);
-  checkedBrands();
-  checkedCategories();
-
-  const data = {
-    category: categoryValues,
-    brand: brandValues,
-    trang: trang,
-  };
-  fetch(fullUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      var products = data.ds;
-      const soTrang = data.soTrang;
       console.log(data);
-      giaoDienSanPham(products); //In ra giao dien San Pham
-
-      var trang = data.soTrang;
-      var htmlTrang = "";
-      for (let i = 1; i <= trang; i++) {
-        htmlTrang += `<a class="active" onclick="phanTrangFilter(${
-          i - 1
-        })">${i}</a>`;
-      }
-
+      console.log(htmlTrang);
       dsSoTrang.innerHTML = htmlTrang;
     })
     .catch((error) => {
@@ -222,4 +149,72 @@ function giaoDienSanPham(products) {
     </div>`;
   });
   dssp.innerHTML = html;
+}
+
+function pagination(vtt, action) {
+  const currentUrl = window.location.origin + "/doanweb2";
+  const relativeUrl = "/client/TrangSanPhamController/" + action;
+  const fullUrl = currentUrl + relativeUrl;
+
+  fetch(fullUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: "vtt=" + vtt,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      var products = data;
+      giaoDienSanPham(products);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+// Xử lý chức năng tìm kiếm nâng cao
+
+async function search(vtt) {
+  if (typeof vtt === "object") {
+    vtt = "0";
+  }
+  const currentUrl = window.location.origin + "/" + tenDoAn;
+  const relativeUrl = "/client/TrangSanPhamController/search";
+  const fullUrl = currentUrl + relativeUrl;
+  console.log(fullUrl);
+  getValueofCheckBox();
+  var text = formSearch.tenSp.value;
+  const data = {
+    category: categoryValues,
+    brand: brandValues,
+    size: sizeValues,
+    trang: vtt,
+    text: text,
+  };
+  try {
+    const response = await fetch(fullUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    //nhan du lieu
+    const jsonData = await response.json();
+
+    var products = jsonData.ds;
+    console.log(jsonData);
+    giaoDienSanPham(products); //In ra giao dien San Pham
+
+    var trang = jsonData.soTrang;
+    var htmlTrang = "";
+    for (let i = 1; i <= trang; i++) {
+      htmlTrang += `<a class="active" onclick="search(${i - 1})">${i}</a>`;
+    }
+
+    dsSoTrang.innerHTML = htmlTrang;
+  } catch (error) {
+    console.error("Error:", error);
+  }
 }

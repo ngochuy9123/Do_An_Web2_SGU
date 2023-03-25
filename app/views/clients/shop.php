@@ -24,9 +24,9 @@
             <div class="col-lg-3">
                 <div class="shop__sidebar">
                     <div class="shop__sidebar__search">
-                        <form action="#">
-                            <input type="text" placeholder="Search...">
-                            <button type="submit"><span class="icon_search"></span></button>
+                        <form id="search-form">
+                            <input type="text" placeholder="Search..." name="tenSp">
+                            <button onclick="filter(0)" type="button"><span class="icon_search"></span></button>
                         </form>
                     </div>
                     <div class="shop__sidebar__accordion">
@@ -42,12 +42,10 @@
 
                                                 <?php foreach($dsLoai as $l): ?>
                                                 <input type="checkbox" name="categories" value="<?php echo $l['id'] ?>">
-                                                <label><?php echo $l['name'] ?></label>
+                                                <label><?php echo $l['name_category'] ?></label>
                                                 <br>
                                                 <?php endforeach ?>
                                             </div>
-                                            <button onclick="checkedCategories()">Test</button>
-
                                         </div>
                                     </div>
                                 </div>
@@ -63,12 +61,11 @@
 
                                                 <?php foreach($dsThuongHieu as $th): ?>
                                                 <input type="checkbox" name="brands" value="<?php echo $th['id'] ?>">
-                                                <label><?php echo $th['name'] ?></label>
+                                                <label><?php echo $th['name_brand'] ?></label>
                                                 <br>
 
                                                 <?php endforeach ?>
                                             </div>
-                                            <button onclick="checkedBrands()">Test</button>
                                         </div>
                                     </div>
                                 </div>
@@ -98,31 +95,12 @@
                                 </div>
                                 <div id="collapseFour" class="collapse show" data-parent="#accordionExample">
                                     <div class="card-body">
-                                        <div class="shop__sidebar__size">
-                                            <label for="xs">xs
-                                                <input type="radio" id="xs">
-                                            </label>
-                                            <label for="sm">s
-                                                <input type="radio" id="sm">
-                                            </label>
-                                            <label for="md">m
-                                                <input type="radio" id="md">
-                                            </label>
-                                            <label for="xl">xl
-                                                <input type="radio" id="xl">
-                                            </label>
-                                            <label for="2xl">2xl
-                                                <input type="radio" id="2xl">
-                                            </label>
-                                            <label for="xxl">xxl
-                                                <input type="radio" id="xxl">
-                                            </label>
-                                            <label for="3xl">3xl
-                                                <input type="radio" id="3xl">
-                                            </label>
-                                            <label for="4xl">4xl
-                                                <input type="radio" id="4xl">
-                                            </label>
+                                        <div id="size-filter" class="shop__sidebar__size">
+                                            <?php foreach ($dsSize as $size): ?>
+                                            <input type="checkbox" name="sizes" value="<?php echo $size['id'] ?>">
+                                            <label><?php echo $size['name'] ?></label>
+                                            <br>
+                                            <?php endforeach ?>
                                         </div>
                                     </div>
                                 </div>
@@ -144,9 +122,8 @@
                             <div class="shop__product__option__right">
                                 <p>Sort by Price:</p>
                                 <select>
-                                    <option value="">Low To High</option>
-                                    <option value="">$0 - $55</option>
-                                    <option value="">$55 - $100</option>
+                                    <option value="1">Low To High</option>
+                                    <option value="2">High To Low</option>
                                 </select>
                             </div>
                         </div>
@@ -211,7 +188,8 @@
                     <div class="col-lg-12">
                         <div id="dsSoTrang" class="product__pagination">
                             <?php for($i=1;$i<=$tst;$i++): ?>
-                            <a class="active" onclick="phanTrang(<?php echo $i-1 ?>)"><?php echo $i ?></a>
+                            <a class="active"
+                                onclick="pagination(<?php echo $i-1 ?>,`ajaxPhanTrang`)"><?php echo $i ?></a>
                             <?php endfor ?>
                         </div>
                     </div>
