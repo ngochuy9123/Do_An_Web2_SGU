@@ -300,26 +300,53 @@ input[type="range"]::-moz-rang-thumb {
         input.addEventListener("input", (e) => {
             let minVal = parseInt(priceInput[0].value);
             let maxVal = parseInt(priceInput[1].value);
-           
+          
            if((maxVal-minVal>=priceGap)&&maxVal<=10000){
                 if(e.target.className ==="input-min"){
                     rangeInput[0].value = minVal;
                     progress.style.left = (minVal/rangeInput[0].max)*100 + "%";
                 }else{
+                    
                     rangeInput[1].value = maxVal;
                     progress.style.right = 100-(maxVal/rangeInput[1].max)*100 + "%";
                 }
            }
+            
+           
 
             
         });
+        input.addEventListener("blur",()=>{
+            let minVal = parseInt(priceInput[0].value);
+            let maxVal = parseInt(priceInput[1].value);
+            let minValue = document.querySelector(".input-min");
+            let maxValue = document.querySelector(".input-max");
+            if(maxVal-minVal<priceGap){
+                maxVal= minVal+priceGap;
+                rangeInput[1].value = maxVal;
+                maxValue.value = maxVal;
+                progress.style.right = 100-(maxVal/rangeInput[1].max)*100 + "%";
+            }
+            if(minVal<0){
+                minVal=0;
+                rangeInput[0].value = minVal;
+                minValue.value = minVal;
+                progress.style.left = (minVal/rangeInput[0].max)*100 + "%";
+            }
+            if(maxVal>10000){
+                maxVal=10000;
+                rangeInput[1].value = maxVal;
+                maxValue.value = maxVal;
+                progress.style.right = 100-(maxVal/rangeInput[1].max)*100 + "%";
+            }
+        })
     });
 
     rangeInput.forEach((input) => {
         input.addEventListener("input", (e) => {
             let minVal = parseInt(e.target.parentElement.children[0].value);
             let maxVal = parseInt(e.target.parentElement.children[1].value);
-           
+          
            if(maxVal-minVal <priceGap){
                 if(e.target.className ==="range-min"){
                     rangeInput[0].value = maxVal-priceGap;
