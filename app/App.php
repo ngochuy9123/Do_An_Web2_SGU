@@ -1,6 +1,6 @@
 <?php
     class App{
-        private $__controller,$__action,$__params,$__routes;
+        private $__controller,$__action,$__params,$__routes, $__db;
         static public $app;
         public function __construct(){
             global $routes,$config;
@@ -14,6 +14,12 @@
             $__controller = "home";
             $__action = "index";
             $__params = [];
+            
+            if (class_exists('DB')){
+                $dbObject = new DB();
+                $this->__db = $dbObject->db;
+            }
+            
             $this->handleUrl();
             
             

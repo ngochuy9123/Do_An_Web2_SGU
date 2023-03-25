@@ -110,12 +110,12 @@
         //     return $this;
         // }
         
-        public function filter($text,$vtbd){
+        public function filter($text,$vtbd,$priceMin,$priceMax){
             //Câu lênh sql này sẽ nối với bảng product_size để lấy nhg sản phẩm có số lượng lớn hơn 0 và group by id để in ra đúng 1 sản phẩm
             $ds = $this->db->table('products')->select('*')->where(1,"=",1)->join("products_size","id=id_product")
             ->join("categories","products.id_category=categories.id")->join("brands","products.id_brand=brands.id")
             
-            ->where("quantity",">",0)->groupBy("products.id");
+            ->where("quantity",">",0)->where("products.price",">",$priceMin)->where("products.price","<",$priceMax)->groupBy("products.id");
             if($text!=""){
                 $ds=$ds->customWhereAnd("( name LIKE '%$text%' OR  name_category LIKE '%$text%' OR  name_brand LIKE '%$text%' )");
             }

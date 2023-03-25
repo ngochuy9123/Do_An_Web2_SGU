@@ -15,6 +15,15 @@ const sizeValues = [];
 const categoryCheckbox = document.querySelectorAll('input[name="categories"]');
 const formSearch = document.getElementById("search-form");
 
+// Get the range inputs
+// Get the number inputs
+const inputMin = document.querySelector(".input-min");
+const inputMax = document.querySelector(".input-max");
+
+// Get the current values
+const minPrice = inputMin.value;
+const maxPrice = inputMax.value;
+
 for (var i = 0; i < categoryCheckbox.length; i++) {
   categoryCheckbox[i].addEventListener("change", filter);
 }
@@ -27,7 +36,8 @@ const sizeCheckbox = document.querySelectorAll('input[name="sizes"]');
 for (var i = 0; i < sizeCheckbox.length; i++) {
   sizeCheckbox[i].addEventListener("change", filter);
 }
-//Quet ca
+//Quét Các checkboxs
+
 function checkedCategories() {
   for (var i = 0; i < categories.length; i++) {
     if (categories[i].checked) {
@@ -76,6 +86,8 @@ function filter(vtt) {
     size: sizeValues,
     trang: vtt, // If trang is empty, set it to 0
     text: text,
+    priceMin: minPrice,
+    priceMax: maxPrice,
   };
 
   // console.log(data);
@@ -171,50 +183,4 @@ function pagination(vtt, action) {
     .catch((error) => {
       console.log(error);
     });
-}
-
-// Xử lý chức năng tìm kiếm nâng cao
-
-async function search(vtt) {
-  if (typeof vtt === "object") {
-    vtt = "0";
-  }
-  const currentUrl = window.location.origin + "/" + tenDoAn;
-  const relativeUrl = "/client/TrangSanPhamController/search";
-  const fullUrl = currentUrl + relativeUrl;
-  console.log(fullUrl);
-  getValueofCheckBox();
-  var text = formSearch.tenSp.value;
-  const data = {
-    category: categoryValues,
-    brand: brandValues,
-    size: sizeValues,
-    trang: vtt,
-    text: text,
-  };
-  try {
-    const response = await fetch(fullUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    //nhan du lieu
-    const jsonData = await response.json();
-
-    var products = jsonData.ds;
-    console.log(jsonData);
-    giaoDienSanPham(products); //In ra giao dien San Pham
-
-    var trang = jsonData.soTrang;
-    var htmlTrang = "";
-    for (let i = 1; i <= trang; i++) {
-      htmlTrang += `<a class="active" onclick="search(${i - 1})">${i}</a>`;
-    }
-
-    dsSoTrang.innerHTML = htmlTrang;
-  } catch (error) {
-    console.error("Error:", error);
-  }
 }

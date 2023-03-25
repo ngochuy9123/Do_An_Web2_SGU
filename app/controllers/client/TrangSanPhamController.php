@@ -54,7 +54,9 @@
         public function filter(){
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $data = json_decode(file_get_contents('php://input'), true);
-                
+                $priceMin = $data['priceMin'];
+                $priceMax = $data['priceMax'];
+                // echo ($priceMin. "               " .$priceMax);
                 $category = $data['category'];
                 $brand = $data['brand'];
                 $size = $data['size'];
@@ -69,7 +71,7 @@
                 $this->model_sp->category = $category;
                 $this->model_sp->brand = $brand;
                 $this->model_sp->size = $size;   
-                $ds = $this->model_sp->filter($text,$vtt);
+                $ds = $this->model_sp->filter($text,$vtt,$priceMin,$priceMax);
                 // $dssp  =$this->model_sp->getFilterAll();
                 $soTrang = $this->model_sp->tongSoTrang($this->model_sp->dsspFull);
                 // Encode both arrays as a JSON object
