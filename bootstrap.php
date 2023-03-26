@@ -47,5 +47,7 @@
     }
     require_once('core/Model.php');
     require_once('core/Controller.php'); // Load base controller
+    require_once('core/Request.php');
+    require_once('core/Response.php');
     
 ?>
