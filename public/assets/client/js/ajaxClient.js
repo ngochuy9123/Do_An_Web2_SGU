@@ -17,8 +17,8 @@ const formSearch = document.getElementById("search-form");
 
 // Get the range inputs
 // Get the number inputs
-const inputMin = document.querySelector(".input-min");
-const inputMax = document.querySelector(".input-max");
+let inputMin = document.querySelector(".input-min");
+let inputMax = document.querySelector(".input-max");
 
 // Get the current values
 const minPrice = inputMin.value;
@@ -79,7 +79,7 @@ function filter(vtt) {
   console.log(fullUrl);
   getValueofCheckBox();
   var text = formSearch.tenSp.value;
-
+  console.log(priceMax + "    " + priceMin);
   const data = {
     category: categoryValues,
     brand: brandValues,
